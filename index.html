@@ -3,103 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DUADO SNACK - Mini ERP System</title>
+    <title>DUADO SNACK - ERP & POS System</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-orange-50 font-sans text-gray-800">
-    <!-- Header -->
-    <header class="bg-amber-900 text-white p-4 shadow-md flex justify-between items-center">
-        <div>
-            <h1 class="text-lg font-bold tracking-wider">DUADO SNACK</h1>
-            <p class="text-xs text-yellow-200">ERP & POS System</p>
+<body class="bg-gradient-to-br from-amber-50 to-orange-100 min-h-screen text-gray-800 pb-28">
+
+    <!-- HEADER -->
+    <header class="bg-amber-900 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center border-b border-amber-800">
+        <div class="flex items-center space-x-3">
+            <div class="bg-amber-800 p-2 rounded-xl text-yellow-400 shadow-inner">
+                <i class="fa-solid fa-fire text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-base font-bold tracking-wide">DUADO SNACK</h1>
+                <p class="text-[10px] text-yellow-200">Jajanan Cemilan Pedas ERP</p>
+            </div>
         </div>
         <div class="flex items-center gap-2">
-            <span id="badge-role" class="text-xs bg-amber-700 px-2 py-1 rounded text-yellow-200">Tamu</span>
-            <span id="badge-sync" class="text-xs bg-red-600 px-2 py-1 rounded-full text-white">Offline</span>
+            <span id="badge-role" class="text-[10px] bg-amber-700/80 px-2.5 py-1 rounded-full text-yellow-200 border border-amber-600 font-semibold shadow-sm">Tamu</span>
+            <span id="badge-sync" class="text-[10px] bg-red-600 px-2.5 py-1 rounded-full text-white font-medium shadow-sm flex items-center gap-1">
+                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Offline
+            </span>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="p-4 max-w-md mx-auto space-y-4 pb-24">
-        <!-- Panel Otentikasi Role -->
-        <div class="bg-white p-3 rounded-xl shadow flex justify-between items-center text-xs">
-            <span class="font-semibold text-gray-600">Akses Pengguna:</span>
-            <div class="space-x-1">
-                <button onclick="App.setRole('karyawan')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold">Karyawan</button>
-                <button onclick="App.setRole('owner')" class="bg-amber-600 text-white px-3 py-1 rounded font-bold">Owner</button>
+    <!-- MAIN CONTAINER -->
+    <main class="p-4 max-w-md mx-auto space-y-4">
+        
+        <!-- PANEL OTENTIKASI ROLE -->
+        <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-orange-100 flex justify-between items-center">
+            <span class="text-xs font-semibold text-gray-600 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-shield text-amber-700"></i> Pilih Akses:
+            </span>
+            <div class="space-x-1.5">
+                <button type="button" onclick="App.setRole('karyawan')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm transition active:scale-95">Karyawan</button>
+                <button type="button" onclick="App.setRole('owner')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm transition active:scale-95">Owner</button>
             </div>
         </div>
 
-        <!-- Dashboard Ringkasan -->
+        <!-- DASHBOARD RINGKASAN -->
         <div class="grid grid-cols-2 gap-3">
-            <div class="bg-white p-3 rounded-xl shadow border-l-4 border-amber-600">
-                <p class="text-xs text-gray-500">Omset Hari Ini</p>
-                <h3 id="ui-total-omset" class="text-base font-bold text-amber-900">Rp 0</h3>
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border-l-4 border-amber-600 border-y border-r border-orange-100">
+                <p class="text-[11px] text-gray-400 font-medium">Omset Hari Ini</p>
+                <h3 id="ui-total-omset" class="text-base font-bold text-amber-900 mt-0.5">Rp 0</h3>
             </div>
-            <div class="bg-white p-3 rounded-xl shadow border-l-4 border-green-500">
-                <p class="text-xs text-gray-500">Net Revenue (Bersih)</p>
-                <h3 id="ui-net-omset" class="text-base font-bold text-green-600">Rp 0</h3>
+            <div class="bg-white p-3.5 rounded-2xl shadow-sm border-l-4 border-emerald-500 border-y border-r border-orange-100">
+                <p class="text-[11px] text-gray-400 font-medium">Net Revenue (Bersih)</p>
+                <h3 id="ui-net-omset" class="text-base font-bold text-emerald-600 mt-0.5">Rp 0</h3>
             </div>
         </div>
 
-        <!-- Menu Navigasi Modul -->
-        <div class="bg-white p-3 rounded-xl shadow">
-            <div class="grid grid-cols-3 gap-2 text-center text-xs font-semibold">
-                <button onclick="App.switchTab('pos')" class="p-2 bg-amber-100 rounded-lg text-amber-900">Kasir</button>
-                <button onclick="App.switchTab('produk')" class="p-2 bg-orange-100 rounded-lg text-orange-900">Produk</button>
-                <button onclick="App.switchTab('sync')" class="p-2 bg-green-100 rounded-lg text-green-900">Sinkron</button>
+        <!-- NAVIGASI MODUL -->
+        <div class="bg-white p-2 rounded-2xl shadow-sm border border-orange-100">
+            <div class="grid grid-cols-3 gap-1.5 text-center text-xs font-semibold">
+                <button type="button" onclick="App.switchTab('pos')" id="btn-tab-pos" class="p-2.5 rounded-xl bg-amber-600 text-white shadow-sm transition">
+                    <i class="fa-solid fa-cash-register block mb-1 text-sm"></i> Kasir
+                </button>
+                <button type="button" onclick="App.switchTab('produk')" id="btn-tab-produk" class="p-2.5 rounded-xl text-gray-600 hover:bg-orange-50 transition">
+                    <i class="fa-solid fa-box-open block mb-1 text-sm"></i> Produk & HPP
+                </button>
+                <button type="button" onclick="App.switchTab('sync')" id="btn-tab-sync" class="p-2.5 rounded-xl text-gray-600 hover:bg-orange-50 transition">
+                    <i class="fa-solid fa-cloud-arrow-up block mb-1 text-sm"></i> Sinkron
+                </button>
             </div>
         </div>
 
         <!-- MODUL 1: KASIR (POS) -->
-        <section id="tab-pos" class="bg-white p-4 rounded-xl shadow space-y-3">
-            <h2 class="font-bold text-amber-900 text-sm border-b pb-2">Kasir Penjualan</h2>
+        <section id="tab-pos" class="bg-white p-5 rounded-2xl shadow-sm border border-orange-100 space-y-3.5">
+            <h2 class="font-bold text-amber-900 text-sm border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-cash-register text-amber-600"></i> Kasir Penjualan
+            </h2>
             <div>
-                <label class="text-xs text-gray-600">Channel Penjualan</label>
-                <select id="pos-channel" class="w-full p-2 border rounded-lg text-sm mt-1 bg-white">
+                <label class="text-xs font-semibold text-gray-600">Channel Penjualan</label>
+                <select id="pos-channel" class="w-full p-2.5 border border-gray-200 rounded-xl text-xs mt-1 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-amber-500 outline-none transition">
                     <option value="Offline">Offline (Toko Langsung)</option>
                     <option value="ShopeeFood">ShopeeFood (Potongan Komisi 20%)</option>
                 </select>
             </div>
             <div>
-                <label class="text-xs text-gray-600">Pilih Produk</label>
-                <select id="pos-product-select" class="w-full p-2 border rounded-lg text-sm mt-1 bg-white"></select>
+                <label class="text-xs font-semibold text-gray-600">Pilih Produk & Kemasan</label>
+                <select id="pos-product-select" class="w-full p-2.5 border border-gray-200 rounded-xl text-xs mt-1 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-amber-500 outline-none transition"></select>
             </div>
             <div>
-                <label class="text-xs text-gray-600">Jumlah (Qty)</label>
-                <input type="number" id="pos-qty" value="1" min="1" class="w-full p-2 border rounded-lg text-sm mt-1">
+                <label class="text-xs font-semibold text-gray-600">Jumlah (Qty)</label>
+                <input type="number" id="pos-qty" value="1" min="1" class="w-full p-2.5 border border-gray-200 rounded-xl text-xs mt-1 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-amber-500 outline-none transition">
             </div>
-            <button onclick="App.processTransaction()" class="w-full bg-amber-600 text-white p-2.5 rounded-lg font-bold text-sm shadow hover:bg-amber-700">Simpan Transaksi</button>
+            <button type="button" onclick="App.processTransaction()" class="w-full bg-amber-600 hover:bg-amber-700 text-white p-3 rounded-xl font-bold text-xs shadow-md shadow-amber-600/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-cart-shopping"></i> Simpan Transaksi
+            </button>
         </section>
 
-        <!-- MODUL 2: PRODUK -->
-        <section id="tab-produk" class="bg-white p-4 rounded-xl shadow space-y-3 hidden">
-            <h2 class="font-bold text-amber-900 text-sm border-b pb-2">Daftar Produk Existing</h2>
-            <div id="ui-product-list" class="space-y-1 text-xs max-h-60 overflow-y-auto"></div>
+        <!-- MODUL 2: PRODUK & HPP -->
+        <section id="tab-produk" class="bg-white p-5 rounded-2xl shadow-sm border border-orange-100 space-y-3.5 hidden">
+            <h2 class="font-bold text-amber-900 text-sm border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-box-open text-amber-600"></i> Daftar Produk & HPP Existing
+            </h2>
+            <div id="ui-product-list" class="space-y-2 text-xs max-h-80 overflow-y-auto pr-1"></div>
         </section>
 
         <!-- MODUL 3: SINKRONISASI -->
-        <section id="tab-sync" class="bg-white p-4 rounded-xl shadow space-y-3 hidden">
-            <h2 class="font-bold text-amber-900 text-sm border-b pb-2">Sinkronisasi Cloud</h2>
-            <p class="text-xs text-gray-600">Data transaksi offline tersimpan aman di HP/Laptop dan otomatis dikirim saat online.</p>
-            <button onclick="App.triggerSync()" class="w-full bg-green-600 text-white p-2.5 rounded-lg font-bold text-sm">Sinkronkan Sekarang</button>
+        <section id="tab-sync" class="bg-white p-5 rounded-2xl shadow-sm border border-orange-100 space-y-3.5 hidden">
+            <h2 class="font-bold text-amber-900 text-sm border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-up text-amber-600"></i> Sinkronisasi Cloud
+            </h2>
+            <p class="text-xs text-gray-500 leading-relaxed">Data transaksi offline tersimpan aman di perangkat Anda dan otomatis dikirim ke Google Sheets saat perangkat kembali terhubung ke internet.</p>
+            <button type="button" onclick="App.triggerSync()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl font-bold text-xs shadow-md shadow-emerald-600/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-rotate"></i> Sinkronkan Sekarang
+            </button>
         </section>
+
     </main>
 
-    <!-- LOGIKA APLIKASI (MODULAR ENGINE) -->
+    <!-- LOGIKA APLIKASI -->
     <script>
-        const SCRIPT_URL = https://script.google.com/macros/s/AKfycbzuDLpiXWOHE3qcFLMSMiZQpif4V1wOit-vmNrIbmQ7h1rX01JM6URwt4Ob1UVPZIGB/exec;
+        const SCRIPT_URL = "MASUKKAN_WEB_APP_URL_GOOGLE_SCRIPT_ANDA_DISINI";
 
         const App = {
             role: 'tamu',
             state: {
-                products: JSON.parse(localStorage.getItem('duado_products')) || [
-                    { nama: "Makaroni Small (80gr)", harga: 6000 },
-                    { nama: "Makaroni Medium (500gr)", harga: 25000 },
-                    { nama: "Makaroni Large (1kg)", harga: 50000 },
-                    { nama: "Pilus Medium (500gr)", harga: 30000 },
-                    { nama: "Usus Krispy Medium (500gr)", harga: 40000 }
+                // Data produk & HPP lengkap sesuai dengan data existing Anda
+                products: [
+                    { nama: "Makaroni Small (80gr)", hpp: 3955, harga: 6000 },
+                    { nama: "Makaroni Medium (500gr)", hpp: 18824, harga: 25000 },
+                    { nama: "Makaroni Large (1kg)", hpp: 36014, harga: 50000 },
+                    { nama: "Pilus Small (80gr)", hpp: 5344, harga: 6000 },
+                    { nama: "Pilus Medium (500gr)", hpp: 24574, harga: 30000 },
+                    { nama: "Pilus Large (1kg)", hpp: 47514, harga: 60000 },
+                    { nama: "Siomay Kering Small (80gr)", hpp: 5404, harga: 6000 },
+                    { nama: "Siomay Kering Medium (500gr)", hpp: 24574, harga: 30000 },
+                    { nama: "Siomay Kering Large (1kg)", hpp: 47514, harga: 60000 },
+                    { nama: "Usus Krispy Small (80gr)", hpp: 6844, harga: 8000 },
+                    { nama: "Usus Krispy Medium (500gr)", hpp: 33949, harga: 40000 },
+                    { nama: "Usus Krispy Large (1kg)", hpp: 66264, harga: 80000 }
                 ],
                 transactions: JSON.parse(localStorage.getItem('duado_transactions')) || []
             },
@@ -119,27 +162,46 @@
             switchTab(tabId) {
                 ['pos', 'produk', 'sync'].forEach(t => {
                     document.getElementById(`tab-${t}`).classList.add('hidden');
+                    const btn = document.getElementById(`btn-tab-${t}`);
+                    btn.className = "p-2.5 rounded-xl text-gray-600 hover:bg-orange-50 transition";
                 });
                 document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+                const activeBtn = document.getElementById(`btn-tab-${tabId}`);
+                activeBtn.className = "p-2.5 rounded-xl bg-amber-600 text-white shadow-sm transition";
             },
 
             renderProducts() {
                 const select = document.getElementById('pos-product-select');
                 const list = document.getElementById('ui-product-list');
+                if (!select || !list) return;
+
                 select.innerHTML = '';
                 list.innerHTML = '';
 
                 this.state.products.forEach(p => {
                     select.innerHTML += `<option value="${p.nama}|${p.harga}">${p.nama} - Rp ${p.harga.toLocaleString('id-ID')}</option>`;
-                    list.innerHTML += `<div class="flex justify-between py-1 border-b"><span><b>${p.nama}</b></span><span class="font-bold text-amber-900">Rp ${p.harga.toLocaleString('id-ID')}</span></div>`;
+                    let margin = p.harga - p.hpp;
+                    list.innerHTML += `
+                        <div class="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <div>
+                                <p class="font-bold text-gray-800">${p.nama}</p>
+                                <p class="text-[10px] text-gray-400">HPP: Rp ${p.hpp.toLocaleString('id-ID')} | Margin: Rp ${margin.toLocaleString('id-ID')}</p>
+                            </div>
+                            <span class="font-bold text-amber-900 text-xs bg-amber-100 px-2.5 py-1 rounded-lg">Rp ${p.harga.toLocaleString('id-ID')}</span>
+                        </div>`;
                 });
             },
 
             processTransaction() {
                 const channel = document.getElementById('pos-channel').value;
-                const [nama, hargaStr] = document.getElementById('pos-product-select').value.split('|');
+                const productSelect = document.getElementById('pos-product-select').value;
+                if (!productSelect) {
+                    alert('Silakan pilih produk terlebih dahulu!');
+                    return;
+                }
+                const [nama, hargaStr] = productSelect.split('|');
                 const harga = parseInt(hargaStr);
-                const qty = parseInt(document.getElementById('pos-qty').value);
+                const qty = parseInt(document.getElementById('pos-qty').value) || 1;
                 
                 const total = harga * qty;
                 const netTotal = channel === 'ShopeeFood' ? total - (total * 0.20) : total;
@@ -153,7 +215,7 @@
                 this.state.transactions.push(trx);
                 localStorage.setItem('duado_transactions', JSON.stringify(this.state.transactions));
                 
-                alert('Transaksi berhasil dicatat (Offline Ready)!');
+                alert('Transaksi berhasil dicatat secara lokal!');
                 document.getElementById('pos-qty').value = 1;
                 this.renderSummary();
             },
@@ -169,12 +231,12 @@
                 const updateStatus = () => {
                     const badge = document.getElementById('badge-sync');
                     if (navigator.onLine) {
-                        badge.className = "text-xs bg-green-600 px-2 py-1 rounded-full text-white";
-                        badge.innerText = "Online";
+                        badge.className = "text-[10px] bg-emerald-600 px-2.5 py-1 rounded-full text-white font-medium shadow-sm flex items-center gap-1";
+                        badge.innerHTML = '<span class="w-1.5 h-1.5 bg-white rounded-full"></span> Online';
                         this.autoSync();
                     } else {
-                        badge.className = "text-xs bg-red-600 px-2 py-1 rounded-full text-white";
-                        badge.innerText = "Offline Mode";
+                        badge.className = "text-[10px] bg-red-600 px-2.5 py-1 rounded-full text-white font-medium shadow-sm flex items-center gap-1";
+                        badge.innerHTML = '<span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> Offline Mode';
                     }
                 };
                 window.addEventListener('online', updateStatus);
@@ -184,7 +246,7 @@
 
             autoSync() {
                 let txs = JSON.parse(localStorage.getItem('duado_transactions') || '[]');
-                if(txs.length === 0) return;
+                if(txs.length === 0 || SCRIPT_URL.includes("MASUKKAN")) return;
 
                 fetch(SCRIPT_URL, {
                     method: 'POST',
@@ -201,12 +263,19 @@
                     alert('Perangkat sedang offline.');
                     return;
                 }
+                if (SCRIPT_URL.includes("MASUKKAN")) {
+                    alert('URL Google Apps Script belum dimasukkan di kode!');
+                    return;
+                }
                 this.autoSync();
                 alert('Sinkronisasi manual dijalankan ke Google Sheets!');
             }
         };
 
-        App.init();
+        // Inisialisasi setelah DOM siap
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
     </script>
 </body>
 </html>
