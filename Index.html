@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUADO SNACK - Mini ERP System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-orange-50 font-sans text-gray-800">
+    <!-- Header -->
+    <header class="bg-amber-900 text-white p-4 shadow-md flex justify-between items-center">
+        <div>
+            <h1 class="text-lg font-bold tracking-wider">DUADO SNACK</h1>
+            <p class="text-xs text-yellow-200">ERP & POS System</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <span id="badge-role" class="text-xs bg-amber-700 px-2 py-1 rounded text-yellow-200">Tamu</span>
+            <span id="badge-sync" class="text-xs bg-red-600 px-2 py-1 rounded-full text-white">Offline</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="p-4 max-w-md mx-auto space-y-4 pb-24">
+        <!-- Panel Otentikasi Role -->
+        <div class="bg-white p-3 rounded-xl shadow flex justify-between items-center text-xs">
+            <span class="font-semibold text-gray-600">Akses Pengguna:</span>
+            <div class="space-x-1">
+                <button onclick="App.setRole('karyawan')" class="bg-blue-600 text-white px-3 py-1 rounded font-bold">Karyawan</button>
+                <button onclick="App.setRole('owner')" class="bg-amber-600 text-white px-3 py-1 rounded font-bold">Owner</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Ringkasan -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white p-3 rounded-xl shadow border-l-4 border-amber-600">
+                <p class="text-xs text-gray-500">Omset Hari Ini</p>
+                <h3 id="ui-total-omset" class="text-base font-bold text-amber-900">Rp 0</h3>
+            </div>
+            <div class="bg-white p-3 rounded-xl shadow border-l-4 border-green-500">
+                <p class="text-xs text-gray-500">Net Revenue (Bersih)</p>
+                <h3 id="ui-net-omset" class="text-base font-bold text-green-600">Rp 0</h3>
+            </div>
+        </div>
+
+        <!-- Menu Navigasi Modul -->
+        <div class="bg-white p-3 rounded-xl shadow">
+            <div class="grid grid-cols-3 gap-2 text-center text-xs font-semibold">
+                <button onclick="App.switchTab('pos')" class="p-2 bg-amber-100 rounded-lg text-amber-900">Kasir</button>
+                <button onclick="App.switchTab('produk')" class="p-2 bg-orange-100 rounded-lg text-orange-900">Produk</button>
+                <button onclick="App.switchTab('sync')" class="p-2 bg-green-100 rounded-lg text-green-900">Sinkron</button>
+            </div>
+        </div>
+
+        <!-- MODUL 1: KASIR (POS) -->
+        <section id="tab-pos" class="bg-white p-4 rounded-xl shadow space-y-3">
+            <h2 class="font-bold text-amber-900 text-sm border-b pb-2">Kasir Penjualan</h2>
+            <div>
+                <label class="text-xs text-gray-600">Channel Penjualan</label>
+                <select id="pos-channel" class="w-full p-2 border rounded-lg text-sm mt-1 bg-white">
+                    <option value="Offline">Offline (Toko Langsung)</option>
+                    <option value="ShopeeFood">ShopeeFood (Potongan Komisi 20%)</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs text-gray-600">Pilih Produk</label>
+                <select id="pos-product-select" class="w-full p-2 border rounded-lg text-sm mt-1 bg-white"></select>
+            </div>
+            <div>
+                <label class="text-xs text-gray-600">Jumlah (Qty)</label>
+                <input type="number" id="pos-qty" value="1" min="1" class="w-full p-2 border rounded-lg text-sm mt-1">
+            </div>
+            <button onclick="App.processTransaction()" class="w-full bg-amber-600 text-white p-2.5 rounded-lg font-bold text-sm shadow hover:bg-amber-700">Simpan Transaksi</button>
+        </section>
+
+        <!-- MODUL 2: PRODUK -->
+        <section id="tab-produk" class="bg-white p-4 rounded-xl shadow space-y-3 hidden">
+            <h2 class="font-bold text-amber-900 text-sm border-b pb-2">Daftar Produk Existing</h2>
+            <div id="ui-product-list" class="space-y-1 text-xs max-h-60 overflow-y-auto"></div>
+        </section>
+
+        <!-- MODUL 3: SINKRONISASI -->
+        <section id="tab-sync" class="bg-white p-4 rounded-xl shadow space-y-3 hidden">
+            <h2 class="font-bold text-amber-900 text-sm border-b pb-2">Sinkronisasi Cloud</h2>
+            <p class="text-xs text-gray-600">Data transaksi offline tersimpan aman di HP/Laptop dan otomatis dikirim saat online.</p>
+            <button onclick="App.triggerSync()" class="w-full bg-green-600 text-white p-2.5 rounded-lg font-bold text-sm">Sinkronkan Sekarang</button>
+        </section>
+    </main>
+
+    <!-- LOGIKA APLIKASI (MODULAR ENGINE) -->
+    <script>
+        const SCRIPT_URL = https://script.google.com/macros/s/AKfycbzuDLpiXWOHE3qcFLMSMiZQpif4V1wOit-vmNrIbmQ7h1rX01JM6URwt4Ob1UVPZIGB/exec;
+
+        const App = {
+            role: 'tamu',
+            state: {
+                products: JSON.parse(localStorage.getItem('duado_products')) || [
+                    { nama: "Makaroni Small (80gr)", harga: 6000 },
+                    { nama: "Makaroni Medium (500gr)", harga: 25000 },
+                    { nama: "Makaroni Large (1kg)", harga: 50000 },
+                    { nama: "Pilus Medium (500gr)", harga: 30000 },
+                    { nama: "Usus Krispy Medium (500gr)", harga: 40000 }
+                ],
+                transactions: JSON.parse(localStorage.getItem('duado_transactions')) || []
+            },
+
+            init() {
+                this.renderProducts();
+                this.renderSummary();
+                this.setupNetworkListener();
+            },
+
+            setRole(role) {
+                this.role = role;
+                document.getElementById('badge-role').innerText = role.toUpperCase();
+                alert(`Berhasil masuk sebagai ${role.toUpperCase()}`);
+            },
+
+            switchTab(tabId) {
+                ['pos', 'produk', 'sync'].forEach(t => {
+                    document.getElementById(`tab-${t}`).classList.add('hidden');
+                });
+                document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            },
+
+            renderProducts() {
+                const select = document.getElementById('pos-product-select');
+                const list = document.getElementById('ui-product-list');
+                select.innerHTML = '';
+                list.innerHTML = '';
+
+                this.state.products.forEach(p => {
+                    select.innerHTML += `<option value="${p.nama}|${p.harga}">${p.nama} - Rp ${p.harga.toLocaleString('id-ID')}</option>`;
+                    list.innerHTML += `<div class="flex justify-between py-1 border-b"><span><b>${p.nama}</b></span><span class="font-bold text-amber-900">Rp ${p.harga.toLocaleString('id-ID')}</span></div>`;
+                });
+            },
+
+            processTransaction() {
+                const channel = document.getElementById('pos-channel').value;
+                const [nama, hargaStr] = document.getElementById('pos-product-select').value.split('|');
+                const harga = parseInt(hargaStr);
+                const qty = parseInt(document.getElementById('pos-qty').value);
+                
+                const total = harga * qty;
+                const netTotal = channel === 'ShopeeFood' ? total - (total * 0.20) : total;
+
+                const trx = {
+                    id: 'TRX-' + Date.now(),
+                    tanggal: new Date().toLocaleString(),
+                    channel, produk: nama, qty, total, netTotal
+                };
+
+                this.state.transactions.push(trx);
+                localStorage.setItem('duado_transactions', JSON.stringify(this.state.transactions));
+                
+                alert('Transaksi berhasil dicatat (Offline Ready)!');
+                document.getElementById('pos-qty').value = 1;
+                this.renderSummary();
+            },
+
+            renderSummary() {
+                const totalOmset = this.state.transactions.reduce((acc, curr) => acc + curr.total, 0);
+                const totalNet = this.state.transactions.reduce((acc, curr) => acc + curr.netTotal, 0);
+                document.getElementById('ui-total-omset').innerText = 'Rp ' + totalOmset.toLocaleString('id-ID');
+                document.getElementById('ui-net-omset').innerText = 'Rp ' + totalNet.toLocaleString('id-ID');
+            },
+
+            setupNetworkListener() {
+                const updateStatus = () => {
+                    const badge = document.getElementById('badge-sync');
+                    if (navigator.onLine) {
+                        badge.className = "text-xs bg-green-600 px-2 py-1 rounded-full text-white";
+                        badge.innerText = "Online";
+                        this.autoSync();
+                    } else {
+                        badge.className = "text-xs bg-red-600 px-2 py-1 rounded-full text-white";
+                        badge.innerText = "Offline Mode";
+                    }
+                };
+                window.addEventListener('online', updateStatus);
+                window.addEventListener('offline', updateStatus);
+                updateStatus();
+            },
+
+            autoSync() {
+                let txs = JSON.parse(localStorage.getItem('duado_transactions') || '[]');
+                if(txs.length === 0) return;
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'syncTransaksi', data: txs })
+                }).then(() => {
+                    console.log('Auto-sync data transaksi berhasil.');
+                }).catch(err => console.log('Sync error:', err));
+            },
+
+            triggerSync() {
+                if (!navigator.onLine) {
+                    alert('Perangkat sedang offline.');
+                    return;
+                }
+                this.autoSync();
+                alert('Sinkronisasi manual dijalankan ke Google Sheets!');
+            }
+        };
+
+        App.init();
+    </script>
+</body>
+</html>
